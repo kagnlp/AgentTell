@@ -1,0 +1,38 @@
+# Benchmark roster — the ordered list of scenarios the registry exposes.
+#
+# `order` is load-bearing, not cosmetic: analysis/export_report.py reports scenarios in
+# registry order, and mock_origins/services.py unions label_names across the registry.
+# Adding a scenario = drop a <key>.yaml in this directory and add its key here.
+#
+# The loader ERRORS if a scenarios/*.yaml file appears in neither list, so a new file can
+# never sit orphaned and silently un-run.
+#
+# ORDERING IS THE SPEC's (new-scenarios.md, "Scenario Specification v2"), which ranks by
+# MOTIVATION STRENGTH: (a) a named prior attack class targets the same state attribute,
+# (b) a specific downstream attacker action is documented, (c) the attribute falls in a
+# regulated or recognised sensitivity category. Feasibility is reported separately and is NOT
+# folded into the ordering — a scenario low in this list is not a weak scenario, it is one with
+# a thinner published attacker story, and the report should say so.
+
+order:
+  # --- new-scenarios.md §1–§20, in motivation order. §n is scenario SCn in the paper. -----
+  - sso_wall            # §1  which identity provider authenticates the user
+  - checkout            # §2  which financial institution holds a live session
+  - account_deanon      # §3  which of k accounts belongs to the user
+  - health_service      # §4  which health provider holds the user's records
+  - sensitive_access    # §5  whether the user visited a stigmatised or restricted origin
+  - affiliation         # §6  which political, religious or union organisation
+  - tier_gated          # §7  which subscription tier the account sits at
+  - mfa_config          # §8  which second factor protects the account
+  - recovery_channel    # §9  which recovery path the account uses
+  - balance_threshold   # §10 which band the user's balance or spend falls in
+  - credit_standing     # §11 which credit product or lender the user holds
+  - profession_gated    # §12 the user's occupation
+  - stigma_platform     # §13 an account at a privacy-sensitive service
+  - privilege_role      # §14 whether the user holds elevated rights
+  - content_ownership   # §15 whether the user owns a specific item
+  - life_event          # §16 whether the user had a recent significant personal event
+  - account_age         # §17 how long the user has held the account
+  - confidential_role   # §18 a confidential assignment over a specific item
+  - locale_default      # §19 locale/currency/language — correction rig
+  - vendor_session      # §20 which consumer service holds a session

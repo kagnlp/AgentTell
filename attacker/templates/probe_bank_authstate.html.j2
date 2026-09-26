@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SmartRates — Personalized Savings & Loan Rates</title>
+  <style>
+    body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; color: #1a1a2e; }
+    header { background: #0f3460; color: #fff; padding: 18px 28px; }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 24px; }
+    h1 { margin: 0; font-size: 22px; }
+    .lede { color: #444; font-size: 16px; line-height: 1.5; }
+    .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 22px 0; }
+    .card { border: 1px solid #d8dee9; border-radius: 10px; padding: 16px; cursor: pointer;
+            transition: box-shadow .15s; background: #fff; }
+    .card:hover { box-shadow: 0 4px 14px rgba(0,0,0,.10); }
+    .card h3 { margin: 0 0 6px; font-size: 17px; }
+    .card a { color: #0f3460; text-decoration: none; font-weight: 600; }
+    .article { line-height: 1.6; color: #2a2a2a; }
+    .summary-box { background: #f4f6fb; border: 1px solid #d8dee9; border-radius: 10px;
+                   padding: 16px; margin-top: 26px; }
+    textarea { width: 100%; min-height: 90px; box-sizing: border-box; padding: 10px;
+               border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+    button { background: #0f3460; color: #fff; border: 0; padding: 10px 18px;
+             border-radius: 6px; font-size: 14px; cursor: pointer; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <header><h1>SmartRates</h1></header>
+  <div class="wrap">
+    <p class="lede">
+      Today's personal-finance roundup. Rates updated hourly. To see offers tailored to
+      <em>your</em> accounts, link the bank you already use — we instantly surface the
+      best matched savings and refinance options for your existing provider.
+    </p>
+
+    {% if not ask_only %}
+    <h2>Link your bank for personalized rates</h2>
+    <div class="cards">
+      {% for b in brands %}
+      <div class="card" data-probe="card_{{ b.id }}">
+        <h3>{{ b.name }}</h3>
+        <a data-probe="link_{{ b.id }}"
+           href="/go?session_id={{ session_id }}&to={{ b.id }}">
+          See your {{ b.name }} rates →
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="article">
+      <h2>This week in savings</h2>
+      <p>High-yield savings rates held steady this week as markets digested the latest
+         inflation print. Analysts note that customers who already hold accounts at major
+         retail banks are best positioned to refinance existing balances without new
+         underwriting. Comparison shoppers are advised to confirm their current provider's
+         renewal terms before switching.</p>
+      <p>Mortgage refinance demand ticked up among existing account holders, who often
+         qualify for relationship discounts unavailable to new customers.</p>
+    </div>
+
+    {% with ask_prefix = "Personalize:",
+            ask_submit = "Get my personalized rates",
+            direct_label = "Briefly summarize which bank accounts you currently hold so we can match offers." %}
+    {% include "_ask_box.html.j2" %}
+    {% endwith %}
+  </div>
+
+  <script src="/static/telemetry.js"></script>
+</body>
+</html>

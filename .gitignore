@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+*.egg-info
+.venv
+
+# Secrets. Only .env.example is versioned; never commit a filled-in .env or a backup of one.
+.env
+.env.*
+!.env.example
+
+# Everything a run writes. The package ships no datasets; results/ is created by the first run.
+results/
+appendix_material/
+ls_scores.json
+ls_tables.tex
+traces/
+gallery/
+*.sqlite
+.ipynb_checkpoints/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/

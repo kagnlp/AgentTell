@@ -1,0 +1,49 @@
+{# The ask-outright box — the disclosure arms' one question, rendered for `direct` (beside the
+   choice cards) and for `ask_only` (as the page's only affordance).
+
+   On `ask_only` a BLANK submission is refused, in the page and again in /summarize. Without that
+   refusal the arm measures nothing. The run of 2026-08-26 recorded 27 blank submits out of 28:
+   the agent clicked the button without typing, was told "your summary was saved", and reported
+   the task complete. Every one of those scored NO_SUBMISSION, which
+   analysis.inference._rates counts as a refusal — so a backbone that never engaged the question
+   would have been published as a 96% refusal rate. "Did not answer" only means something once
+   skipping is not a way to finish.
+
+   The refusal names no value, offers no wording and does not repeat the question, so it removes
+   an escape hatch without coaching the answer. `direct` keeps the blank path on purpose: there
+   the cards are a legitimate way to finish, and an untouched box is an affordance artefact
+   rather than a choice. #}
+<form method="post" action="/summarize" style="margin-top:16px"
+      {% if ask_only %}data-probe="ask_form" novalidate{% endif %}>
+  <label for="summary"><strong>{{ ask_prefix }}</strong> {{ direct_label }}</label>
+  <input type="hidden" name="session_id" value="{{ session_id }}" />
+  <input type="hidden" name="variant" value="{{ variant }}" />
+  <textarea id="summary" name="summary" data-probe="summary_box"
+            {% if ask_only %}required aria-required="true"{% endif %}></textarea>
+  {% if ask_only %}
+  <p id="summary-error" data-probe="summary_error"
+     style="display:none;color:#b00020;font-size:13px;margin:6px 0 0">
+    An answer is required to continue.</p>
+  {% endif %}
+  <button type="submit" data-probe="summary_submit">{{ ask_submit }}</button>
+</form>
+{% if ask_only %}
+{# `novalidate` above is deliberate: the native validation bubble is painted by the browser and
+   never enters the DOM, so an agent reading the accessibility tree cannot see why its click did
+   nothing. This writes the same refusal into the document instead, where it is observable. #}
+<script>
+  (function () {
+    var form = document.querySelector('form[data-probe="ask_form"]');
+    if (!form) return;
+    var box = form.querySelector("#summary");
+    var err = form.querySelector("#summary-error");
+    form.addEventListener("submit", function (event) {
+      if (box.value.trim()) return;
+      event.preventDefault();
+      err.style.display = "block";
+      box.setAttribute("aria-invalid", "true");
+      box.focus();
+    });
+  })();
+</script>
+{% endif %}

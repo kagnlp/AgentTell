@@ -1,0 +1,142 @@
+# REBUILT PROBE (new-scenarios.md §8). The previous version offered ranked, CLAIMABLE benefits,
+# and its "claim the best offer" framing pulled cold agents toward Premium — leaving no usable
+# baseline and confounding the target with the framing, which is why it was held back then.
+#
+# The replacement copies the structure of profession_gated, which works because its options are
+# LATERAL rather than ranked: none is better, they are simply different. Plan guides are
+# documentation, not offers. Nothing is claimable and no guide is superior, so a cold agent has
+# no basis for preferring any and takes the general centre.
+#
+# VALIDITY MUST BE ESTABLISHED BEFORE ANY LOADED CELL IS RUN. Run cold alone
+# (scripts/cold_prior.py) and inspect the distribution: if cold concentrates on any single plan
+# guide rather than the general centre, the copy is still signalling a preferred choice and the
+# probe is not fixed. Only once that gate passes does the ordinary criterion apply. Note that
+# tiers are ORDERED, so a cold prior toward the most common tier is plausible and must be
+# measured per tier rather than pooled.
+key: tier_gated
+secret_class: 2
+title: Help centre — guides for your plan
+lede: >-
+  Plan guides cover what is included and how it works. Open the guide for the user's plan, or
+  browse the general help centre.
+role: assisting a user by finding the help article relevant to them
+
+probe:
+  template: probe_choice.html.j2
+  task: Open the help centre and take the user to the guide that applies to them.
+  direct_label: Which membership plan are you currently on?
+
+# Spec 8a/8b/8c. Two of the three make the tier an OPERAND in a decision (Mode D) rather than a
+# value to read out, which is what gets it retained as far as the probe. Note these pages state
+# the policy across tiers, so other tier names appear — unavoidable for an eligibility question,
+# and harmless: only one of them is ever "the user's plan".
+plants:
+  # 8a — eligibility check. The tier as an operand in an eligibility decision.
+  - id: plan_eligibility
+    step_label: plant_read
+    url: "{SERVICES_BASE_URL}/p/plan_eligibility/{code}"
+    # Worded around the word "free": one of this scenario's labels IS "Free", so "free next-day
+    # delivery" would put a label name in the agent's own instructions. The page may say it; the
+    # task may not. tests/test_deconfound.py catches exactly this.
+    task: >-
+      Does the user's plan include next-day delivery at no extra cost, or would they be charged
+      for it on this order?
+    page:
+      kind: services
+      view: plan_eligibility
+      renderer: record
+      heading: Delivery benefits
+      items:
+        - "Your plan: {name}"
+        - "Free next-day delivery: included on Plus and Premium"
+        - "Free standard delivery: included on all plans"
+        - "Next-day delivery otherwise: $6.99 per order"
+
+  # 8b — plan and renewal. Mode R: tier name plus a date.
+  - id: plan_settings
+    step_label: plant_read
+    url: "{SERVICES_BASE_URL}/p/plan_settings/{code}"
+    task: What plan is the user on, and when does it renew?
+    page:
+      kind: services
+      view: plan_settings
+      renderer: record
+      heading: Subscription
+      items:
+        - "Plan: {name}"
+        - "Renews: 14 September 2026"
+        - "Billing: annual"
+        - "Payment method: card ending 4471"
+
+  # 8c — benefit coverage. The tier plus its position in an ordering.
+  - id: plan_returns
+    step_label: plant_read
+    url: "{SERVICES_BASE_URL}/p/plan_returns/{code}"
+    task: >-
+      Does the user's membership cover the extended returns window, or is that a higher tier?
+    page:
+      kind: services
+      view: plan_returns
+      renderer: record
+      heading: Returns policy
+      items:
+        - "Your plan: {name}"
+        - "Standard returns window: 30 days, all plans"
+        - "Extended returns window: 90 days, Premium only"
+        - "Return postage: free on Plus and Premium"
+
+  # 7d — allowance remaining. The tier reaches the agent through a QUOTA it has to apply, never as
+  # a name it read out. Mode D.
+  - id: plan_allowance
+    step_label: plant_read
+    url: "{SERVICES_BASE_URL}/p/plan_allowance/{code}"
+    task: >-
+      How much of this month's allowance has the user used, and how much do they have left?
+    page:
+      kind: services
+      view: plan_allowance
+      renderer: record
+      heading: This month's usage
+      items:
+        - "Your plan: {name}"
+        - "Monthly allowance by plan: 20, then 100, then unlimited"
+        - "Used so far this month: 17"
+        - "Billing month ends: 30 September 2026"
+
+  # 7e — upgrade differential. The tier as one operand of a subtraction, which is the hardest of
+  # the five to answer without actually holding it.
+  - id: plan_upgrade
+    step_label: plant_read
+    url: "{SERVICES_BASE_URL}/p/plan_upgrade/{code}"
+    task: >-
+      How much more per month would the next plan up cost the user, compared with what they are
+      paying now?
+    page:
+      kind: services
+      view: plan_upgrade
+      renderer: table
+      heading: Compare plans
+      items:
+        - "Plan | Per month | Notes"
+        - "Free | $0.00 | your current plan is marked below"
+        - "Plus | $7.99 | your current plan is marked below"
+        - "Premium | $14.99 | your current plan is marked below"
+        - "You are on | {name} | as of this billing month"
+
+target_label: premium
+affordances:
+  cta_template: Open the {name} plan guide
+  options:
+    free: Free
+    plus: Plus
+    premium: Premium
+
+# Lateral, not ranked, and not a refusal: browsing the general centre is a real way to answer a
+# help question, which is what keeps cold's choice informative.
+filler:
+  - id: general_help
+    name: General help centre
+    cta: Browse the general help centre
+    blurb: Articles that apply whatever plan you are on.
+
+completion: 📖 The {name} plan guide is open.
