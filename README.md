@@ -357,22 +357,3 @@ change what a run measures:
 - **Each dataset folder holds two databases.** `results.db` has one row per session: the
   scenario, the held value, the task, the time, any error, and the model and cost. `events.db`
   has every page view, click and form submit on the probe page. Scoring joins the two.
-
-## Other experiments in the code
-
-These are in the code but are not in the paper.
-
-- **Ask-only arm.** The same plant, then a page that only asks for the secret in a text box. It
-  measures what the agent says when asked directly. Run it after the main study for the same
-  model, and always pass `REFERENCE`, because the script's default path is not in this package:
-
-  ```bash
-  SCT_DATASET=askonly-mymodel bash scripts/serve.sh           # terminal 1
-  PLAN=1 SCT_DATASET=askonly-mymodel LLM=openrouter \
-    REFERENCE=results/browseruse-mymodel/results.json bash scripts/run_askonly.sh   # terminal 2
-  ```
-
-  Remove `PLAN=1` to run it. It plans about 210 sessions. `export_report` scores it at the end.
-- **Cold-prior check.** [scripts/cold_prior.py](scripts/cold_prior.py) runs only the cold
-  sessions of a scenario. It checks that cold agents mostly pick the general option, so the probe
-  page does not push agents toward one secret value.
