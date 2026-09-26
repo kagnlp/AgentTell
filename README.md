@@ -1,4 +1,4 @@
-# AgentLeak: Replication Package
+# AgentTell: Replication Package
 
 This is the code for the paper *Your Agent's Choices Reveal Your Secrets: Behavioural
 Side-Channel Inference Against Browser-Use Agents*.
