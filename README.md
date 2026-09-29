@@ -1,7 +1,6 @@
-# AgentTell: Replication Package
+# AgentTell: Behavioural Side-Channel Leakage in Browser-Use Agents
 
-This is the code for the paper *Your Agent's Choices Reveal Your Secrets: Behavioural
-Side-Channel Inference Against Browser-Use Agents*.
+[Paper](https://arxiv.org/pdf/2609.32915)
 
 A browser-use agent does tasks on websites for a user. On one website it may learn something
 private about the user, for example which bank they use. We ask a simple question: can a second,
@@ -357,3 +356,20 @@ change what a run measures:
 - **Each dataset folder holds two databases.** `results.db` has one row per session: the
   scenario, the held value, the task, the time, any error, and the model and cost. `events.db`
   has every page view, click and form submit on the probe page. Scoring joins the two.
+
+
+## Citation
+
+If you use AgentTell in your research, please consider citing our paper:
+
+```bibtex
+@misc{shahriar2026agenttell,
+  title         = {AgentTell: Behavioural Side-Channel Leakage in Browser-Use Agents},
+  author        = {Shahriar, Asif and Rahman, Md Nafiu and Ahmed, Sadif and Sadeque, Farig and Parvez, Md Rizwan},
+  year          = {2026},
+  eprint        = {2609.32915},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CR},
+  url           = {https://arxiv.org/abs/2609.32915}
+}
+```
