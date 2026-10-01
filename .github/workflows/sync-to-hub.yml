@@ -12,6 +12,6 @@ jobs:
       - uses: huggingface/hub-sync@main
         with:
           github_repo_id: ${{ github.repository }}
-          huggingface_repo_id: nafiurahman/AgentTell
+          huggingface_repo_id: kagnlp/AgentTell
           hf_token: ${{ secrets.HF_TOKEN }}
           repo_type: dataset
