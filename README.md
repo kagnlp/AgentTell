@@ -1,6 +1,6 @@
 # AgentTell: Behavioural Side-Channel Leakage in Browser-Use Agents
 
-[Paper](https://arxiv.org/pdf/2609.32915)
+[Paper](https://arxiv.org/pdf/2609.32915) [Hugging Face](https://huggingface.co/datasets/kagnlp/AgentTell)
 
 A browser-use agent does tasks on websites for a user. On one website it may learn something
 private about the user, for example which bank they use. We ask a simple question: can a second,
