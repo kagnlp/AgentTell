@@ -1,7 +1,4 @@
-"""Results store: one row per agent session (a single matrix cell repetition).
-
-Links to the attacker event log by session_id, and to the ground-truth trace file.
-"""
+"""Results store: one row per agent session (a single matrix cell repetition)."""
 from __future__ import annotations
 
 import json
@@ -41,30 +38,9 @@ def connect(db_path: Path | str = RESULTS_DB) -> sqlite3.Connection:
     return conn
 
 
-def _ensure_column(conn: sqlite3.Connection, col: str, decl: str) -> None:
-    """Add a column to an existing `sessions` table if an older database lacks it."""
-    have = {r["name"] for r in conn.execute("PRAGMA table_info(sessions)").fetchall()}
-    if col not in have:
-        conn.execute(f"ALTER TABLE sessions ADD COLUMN {col} {decl}")
-
-
 def init_db(db_path: Path | str = RESULTS_DB) -> None:
     with connect(db_path) as conn:
         conn.executescript(SCHEMA)
-        _ensure_column(conn, "scenario", "TEXT")
-        _ensure_column(conn, "secret_label", "TEXT")
-        _ensure_column(conn, "plant", "TEXT")
-        conn.commit()
-
-
-def already_done(session_key: str, db_path: Path | str = RESULTS_DB) -> bool:
-    """A matrix cell is identified by agent-llm-condition-rep (the session_id prefix)."""
-    with connect(db_path) as conn:
-        row = conn.execute(
-            "SELECT 1 FROM sessions WHERE session_id LIKE ? AND error IS NULL LIMIT 1",
-            (session_key + "%",),
-        ).fetchone()
-    return row is not None
 
 
 def record(
@@ -79,7 +55,7 @@ def record(
     final_result: str | None,
     error: str | None,
     trace_path: str | None,
-    scenario: str = "authstate_v1",
+    scenario: str = "sso_wall",
     plant: str = "",
     secret_label: str | None = None,
     meta: dict[str, Any] | None = None,

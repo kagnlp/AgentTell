@@ -1,0 +1,103 @@
+{
+ "sessions_total": 9251,
+ "loaded": 7451,
+ "cold": 1800,
+ "f2": {
+  "sessions": 7451,
+  "items": 1786,
+  "regex": 1296,
+  "llm_judge": 1210,
+  "final": 1208,
+  "final_pct": 16.2125889142397,
+  "judge_vs_regex": {
+   "n": 7451,
+   "a_positive": 1210,
+   "b_positive": 1296,
+   "confusion": {
+    "a1_b1": 883,
+    "a1_b0": 327,
+    "a0_b1": 413,
+    "a0_b0": 5828
+   },
+   "agreement": 0.9006844718829687,
+   "cohen_kappa": 0.6450965204044364,
+   "b_precision_vs_a": 0.6813271604938271,
+   "b_recall_vs_a": 0.7297520661157024
+  },
+  "final_vs_judge": {
+   "n": 7451,
+   "a_positive": 1208,
+   "b_positive": 1210,
+   "confusion": {
+    "a1_b1": 1207,
+    "a1_b0": 1,
+    "a0_b1": 3,
+    "a0_b0": 6240
+   },
+   "agreement": 0.9994631593074755,
+   "cohen_kappa": 0.9980253304179285,
+   "b_precision_vs_a": 0.9975206611570248,
+   "b_recall_vs_a": 0.9991721854304636
+  },
+  "adjudicated_items": 425,
+  "adjudicated_changed_from_judge": 4,
+  "final_then_leak": 662,
+  "final_then_leak_pct": 54.80132450331126,
+  "final_per_backbone": {
+   "Claude": 748,
+   "Gemini": 6,
+   "GPT-5.6": 280,
+   "Qwen": 147,
+   "Kimi": 26,
+   "GLM": 1
+  }
+ },
+ "f3": {
+  "sessions": 4264,
+  "items": 1816,
+  "regex": 1987,
+  "llm_judge": 2037,
+  "final": 2038,
+  "final_pct": 47.79549718574109,
+  "judge_vs_regex": {
+   "n": 4264,
+   "a_positive": 2037,
+   "b_positive": 1987,
+   "confusion": {
+    "a1_b1": 1945,
+    "a1_b0": 92,
+    "a0_b1": 42,
+    "a0_b0": 2185
+   },
+   "agreement": 0.9685741088180112,
+   "cohen_kappa": 0.9369571650408052,
+   "b_precision_vs_a": 0.9788626069451435,
+   "b_recall_vs_a": 0.9548355424644085
+  },
+  "final_vs_judge": {
+   "n": 4264,
+   "a_positive": 2038,
+   "b_positive": 2037,
+   "confusion": {
+    "a1_b1": 2033,
+    "a1_b0": 5,
+    "a0_b1": 4,
+    "a0_b0": 2222
+   },
+   "agreement": 0.9978893058161351,
+   "cohen_kappa": 0.9957703019115643,
+   "b_precision_vs_a": 0.9980363279332352,
+   "b_recall_vs_a": 0.9975466143277724
+  },
+  "adjudicated_items": 133,
+  "adjudicated_changed_from_judge": 9,
+  "final_per_backbone": {
+   "Claude": 624,
+   "Gemini": 38,
+   "GPT-5.6": 538,
+   "Qwen": 573,
+   "Kimi": 148,
+   "GLM": 117
+  }
+ }
+}

@@ -1,33 +1,4 @@
-"""Export the Leakage Score of every scenario on every backbone, with 95% bootstrap intervals.
-
-The Leakage Score (LS) is the paper's main metric (Section 4, "Leakage Score") and plan.md's
-Metric 2, the Scenario Leak Score: for each held value s, the fraction of loaded sessions that
-take a(s) minus the fraction of cold sessions that take a(s), averaged over the k held values
-and reported in percentage points. The scenario-level score pools each held value's loaded
-sessions over the five tasks (analysis/channel_metrics.scenario_leak) and carries a percentile
-bootstrap CI (channel_metrics.scenario_leak_ci). The task-level score LS_j is the same statistic
-on the loaded sessions of one plant route against the shared cold pool
-(channel_metrics.plant_metrics). This script computes no metric itself. It runs the existing
-`python -m analysis.channel_metrics` CLI once per finalized dataset, converts its fractions to
-percentage points, and collects the output into one JSON file, plus optional LaTeX table rows
-for the paper appendix.
-
-Two isolation rules hold for every dataset:
-
-- The dataset namespace is bound once, at import, by orchestrator.config. Each dataset therefore
-  runs in its own subprocess with SCT_DATASET set before anything is imported.
-- The recorded databases are never opened. The analysis connectors open SQLite read-write and set
-  WAL mode, which can rewrite a tracked database file. Each dataset's databases are byte-copied
-  into a temporary directory under results/ and the subprocess reads the copy.
-
-PYTHONHASHSEED is fixed because channel_metrics.scenario_leak_ci iterates the held-value groups
-in set order, so its interval endpoints reproduce only under a fixed hash seed.
-
-Usage:
-  uv run python scripts/export_ls_table.py
-  uv run python scripts/export_ls_table.py --n-boot 3000 \
-      --out appendix_material/ls_scores.json --latex appendix_material/ls_tables.tex
-"""
+"""Export the Leakage Score of every scenario on every backbone, with 95% bootstrap intervals."""
 
 from __future__ import annotations
 
@@ -54,43 +25,36 @@ from harness.scenarios import get_scenario  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
-#: Finalized dataset directory under results/ -> backbone name used in the paper, in the order
-#: Section 4 lists the backbones.
 BACKBONES: dict[str, str] = {
-    "final-browseruse-claude-sonnet-5": "Claude",
-    "final-browseruse-gemini-3.7-flash": "Gemini",
-    "final-browseruse-gpt-5.6-luna": "GPT-5.6",
-    "final-browseruse-qwen3-vl-235b": "Qwen",
-    "final-browseruse-glm-4.6v": "GLM",
-    "final-browseruse-kimi-k2.6": "Kimi",
+    "paper18-scoped-claude-sonnet-5": "Claude",
+    "paper18-scoped-gemini-3.7-flash": "Gemini",
+    "paper18-scoped-gpt-5.6-luna": "GPT-5.6",
+    "paper18-scoped-qwen3-vl-235b": "Qwen",
+    "paper18-scoped-glm-4.6v": "GLM",
+    "paper18-scoped-kimi-k2.6": "Kimi",
 }
 
-#: Registry key -> scenario name exactly as in the paper's Table 1 (tab:scenarios), in SC order.
-#: The position in this mapping gives the scenario ID, so SC01 is the first entry.
-PAPER_SCENARIOS: dict[str, str] = {
-    "sso_wall": "Single-sign-on provider",
-    "checkout": "Bank identity",
-    "account_deanon": "Account de-anonymisation",
-    "health_service": "Health-provider identity",
-    "sensitive_access": "Sensitive reading interest",
-    "affiliation": "Organisational affiliation",
-    "tier_gated": "Subscription tier",
-    "mfa_config": "Second factor",
-    "recovery_channel": "Recovery route",
-    "balance_threshold": "Balance band",
-    "credit_standing": "Credit source",
-    "profession_gated": "Occupation",
-    "stigma_platform": "Stigma-associated service",
-    "privilege_role": "Privilege level",
-    "content_ownership": "Document ownership",
-    "life_event": "Recent life event",
-    "account_age": "Account tenure",
-    "confidential_role": "Confidential assignment",
-    "locale_default": "Locale",
-    "vendor_session": "Consumer-service identity",
+PAPER_SCENARIOS: dict[str, tuple[str, str]] = {
+    "sso_wall": ("SC01", "Single-sign-on provider"),
+    "checkout": ("SC02", "Bank identity"),
+    "account_deanon": ("SC03", "Account de-anonymisation"),
+    "health_service": ("SC04", "Health-provider identity"),
+    "sensitive_access": ("SC05", "Sensitive reading interest"),
+    "affiliation": ("SC06", "Organisational affiliation"),
+    "tier_gated": ("SC07", "Subscription tier"),
+    "mfa_config": ("SC08", "Second factor"),
+    "recovery_channel": ("SC09", "Recovery route"),
+    "credit_standing": ("SC11", "Credit source"),
+    "profession_gated": ("SC12", "Occupation"),
+    "stigma_platform": ("SC13", "Stigma-associated service"),
+    "privilege_role": ("SC14", "Privilege level"),
+    "content_ownership": ("SC15", "Document ownership"),
+    "life_event": ("SC16", "Recent life event"),
+    "account_age": ("SC17", "Account tenure"),
+    "confidential_role": ("SC18", "Confidential assignment"),
+    "vendor_session": ("SC20", "Consumer-service identity"),
 }
 
-#: Leakage Scores are reported in percentage points; channel_metrics returns fractions.
 PERCENTAGE_POINTS = 100.0
 
 _DB_FILES = ("results.db", "events.db")
@@ -103,15 +67,11 @@ class ExportError(RuntimeError):
 
 def scenario_id(key: str) -> str:
     """Return the paper's scenario ID (SC01..SC20) for a registry key."""
-    return f"SC{list(PAPER_SCENARIOS).index(key) + 1:02d}"
+    return PAPER_SCENARIOS[key][0]
 
 
 def task_ids(key: str) -> dict[str, str]:
-    """Map each plant route of a scenario to its paper task ID, in registry plant order.
-
-    Raises:
-        ExportError: If the scenario does not declare exactly five plant routes.
-    """
+    """Map each plant route of a scenario to its paper task ID, in registry plant order."""
     plants = list(get_scenario(key).plant_ids)
     if len(plants) != 5:
         raise ExportError(f"{key}: expected 5 plant routes, found {len(plants)}: {plants}")
@@ -129,16 +89,7 @@ def _copy_databases(source: Path, target: Path) -> None:
 
 
 def run_channel_metrics(dataset: str, n_boot: int, hash_seed: int) -> list[dict]:
-    """Run the channel-metrics CLI on a copy of one finalized dataset and return its report.
-
-    Args:
-        dataset: Directory name under results/, for example "final-browseruse-kimi-k2.6".
-        n_boot: Bootstrap resamples for the scenario-level and task-level intervals.
-        hash_seed: PYTHONHASHSEED for the subprocess, which fixes the resampling group order.
-
-    Raises:
-        ExportError: If the dataset is incomplete or the analysis subprocess fails.
-    """
+    """Run the channel-metrics CLI on a copy of one finalized dataset and return its report."""
     with tempfile.TemporaryDirectory(dir=RESULTS_ROOT, prefix=".ls-export-") as tmp:
         copy_dir = Path(tmp)
         _copy_databases(RESULTS_ROOT / dataset, copy_dir)
@@ -178,13 +129,7 @@ def _per_candidate(rates: Mapping[str, Mapping]) -> dict[str, dict]:
 
 
 def scenario_record(key: str, report: Mapping) -> dict:
-    """Reduce one scenario's channel-metrics report to the fields the appendix reports.
-
-    All Leakage Scores and interval bounds are in percentage points.
-
-    Raises:
-        ExportError: If the report carries an error or lacks a task the design requires.
-    """
+    """Reduce one scenario's channel-metrics report to the fields the appendix reports."""
     if "error" in report:
         raise ExportError(f"{key}: {report['error']}")
     tasks = []
@@ -204,7 +149,7 @@ def scenario_record(key: str, report: Mapping) -> dict:
     return {
         "scenario_id": scenario_id(key),
         "key": key,
-        "name": PAPER_SCENARIOS[key],
+        "name": PAPER_SCENARIOS[key][1],
         "k": report["k_options"],
         "ls": _pp(report["scenario_leak"]),
         "ci95": _interval(report["scenario_leak_ci95"]),
@@ -213,7 +158,6 @@ def scenario_record(key: str, report: Mapping) -> dict:
         "null_share": report["abstention"],
         "verdict": report["verdict"],
         "per_candidate": _per_candidate(report["leak_rate_per_target"]),
-        "capability_arm": report.get("capability_arm") or None,
         "tasks": tasks,
     }
 
@@ -292,11 +236,7 @@ def _mark(verdict: str) -> str:
 
 
 def to_latex(export: Mapping) -> str:
-    """Render the scenario-level and task-level Leakage Score table bodies for the appendix.
-
-    The scenario rows use the appendix macro \\lsci{LS}{low}{high}. A dagger marks an interval
-    whose lower bound is not above zero, and a double dagger an interval entirely below zero.
-    """
+    """Render the scenario-level and task-level Leakage Score table bodies for the appendix."""
     backbones = list(export["backbones"].values())
     lines = ["% Generated by scripts/export_ls_table.py. Do not edit by hand.",
              "% --- scenario-level rows (Table: Leakage Score with 95% CI) ---"]
@@ -331,7 +271,7 @@ def main() -> int:
     ap.add_argument("--n-boot", type=int, default=3000)
     ap.add_argument("--hash-seed", type=int, default=0)
     ap.add_argument("--jobs", type=int, default=3, help="datasets scored in parallel")
-    ap.add_argument("--out", type=Path, default=REPO_ROOT / "appendix_material/ls_scores.json")
+    ap.add_argument("--out", type=Path, default=REPO_ROOT / "results/ls_scores.json")
     ap.add_argument("--latex", type=Path, default=None,
                     help="also write the appendix table rows to this file")
     args = ap.parse_args()

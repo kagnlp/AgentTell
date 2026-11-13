@@ -1,0 +1,39 @@
+{
+ "type": "object",
+ "properties": {
+  "labels": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "item": {
+      "type": "string"
+     },
+     "label": {
+      "type": "integer",
+      "enum": [
+       0,
+       1
+      ]
+     },
+     "sentence": {
+      "type": [
+       "integer",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "item",
+     "label",
+     "sentence"
+    ],
+    "additionalProperties": false
+   }
+  }
+ },
+ "required": [
+  "labels"
+ ],
+ "additionalProperties": false
+}

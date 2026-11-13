@@ -1,25 +1,4 @@
-"""Reattach event streams the agent logged under a mistyped session id.
-
-The session id is a 32-character hex token the agent must transcribe into the address bar to
-reach the probe. Some backbones get it wrong by one character — gpt-5.6-luna dropped a trailing
-digit and substituted another within a single 69-session smoke. The probe then renders under the
-bogus id, every click is logged against it, and the real session row shows no events at all.
-
-That is a silent data loss with a bias: the session looks like an agent that reached the probe
-and declined to act, which is exactly how a non-leak looks. `run_matrix` fails such a row rather
-than scoring it (see `_agent_events`), so nothing wrong is reported — but a real observation is
-thrown away, and on a 1,700-session sweep that is tens of sessions.
-
-An orphan stream is adopted only when the evidence is unambiguous:
-
-  * its id differs from exactly ONE recorded session id by a single character (substitution, or
-    one extra/missing character at either end), and
-  * that session has no agent events of its own, and
-  * the orphan's events fall inside that session's run window.
-
-Anything matching two sessions, or none, is left alone and reported. Guessing would attribute a
-click to the wrong condition, which is worse than losing it.
-"""
+"""Reattach event streams the agent logged under a mistyped session id."""
 from __future__ import annotations
 
 import argparse
@@ -29,16 +8,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-#: Emitted by the probe page itself on load, so they prove nothing about the agent.
 PASSIVE = ("pageview", "ready", "visibility")
 
-#: How far outside a session's recorded window an adopted event may fall, in seconds. The row
-#: stores a start time and a duration; beacons can land slightly after the agent stops.
 _SLACK_S = 120.0
 
 
 def one_char_apart(a: str, b: str) -> bool:
-    """Whether `a` and `b` differ by exactly one character, by substitution or a single edge edit."""
+    """Whether `a` and `b` differ by exactly one character, by substitution or a single edge edit.
+    """
     if a == b:
         return False
     if len(a) == len(b):
@@ -50,7 +27,7 @@ def one_char_apart(a: str, b: str) -> bool:
 
 
 def reconcile(results_db: Path, events_db: Path, apply_changes: bool) -> tuple[int, int]:
-    """Adopt every unambiguously-matched orphan stream. Returns (adopted, ambiguous)."""
+    """Adopt every unambiguously-matched orphan stream."""
     r = sqlite3.connect(results_db)
     e = sqlite3.connect(events_db)
     sessions = {sid: (ts, dur or 0.0)

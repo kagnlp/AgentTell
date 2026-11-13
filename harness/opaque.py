@@ -1,16 +1,4 @@
-"""Opaque plant codes.
-
-The plant page must know WHICH service/brand/topic to render, but that id must not appear in
-the URL the agent navigates to. If it did, the held secret would sit in the agent's own
-instructions (the typed URL) as an instruction-echo confound alongside the intended
-carried-context route — the agent reading the name off the plant PAGE. See the de-confound
-rationale in harness/state_planting.py.
-
-So the plant URL carries a one-way `code_for(value)` instead of the readable id. The mock server
-recovers the id by `resolve(code, candidates)` — hashing each of its own known ids and matching —
-so no id→secret mapping ever travels in the URL. `code_for` is deterministic, so state_planting
-(which builds the URL) and the mock server (which resolves it) agree without sharing state.
-"""
+"""Opaque plant codes."""
 from __future__ import annotations
 
 import hashlib

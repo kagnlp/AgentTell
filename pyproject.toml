@@ -20,7 +20,6 @@ dependencies = [
 ]
 
 [tool.ruff]
-# The code was written to a 100-column limit, not Ruff's default of 88.
 line-length = 100
 target-version = "py313"
 
@@ -28,15 +27,7 @@ target-version = "py313"
 select = ["E", "W", "F", "B", "C4", "N", "I", "S", "UP"]
 
 [tool.ruff.lint.per-file-ignores]
-# The scripts are local entry points: they shell out to fixed commands and fetch loopback
-# URLs by design, and they import after inserting the repo root on sys.path.
 "scripts/*" = ["S603", "S310", "E402"]
-# Same for the report exporter, which re-invokes this project per dataset.
 "analysis/export_report.py" = ["S603"]
-# P, Ph and Ps are the probability matrix and its marginals from the mutual-information
-# definition in plan.md, and match the notation in the surrounding docstring.
 "analysis/channel_metrics.py" = ["N806"]
-# Per-run option-order randomization and target rotation are seeded experimental controls
-# (MATRIX.base_seed), not security primitives. Swapping `random` for `secrets` would make
-# every recorded run irreproducible.
 "attacker/app.py" = ["S311"]
