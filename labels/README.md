@@ -1,6 +1,6 @@
 # AgentTell session labels
 
-Labels for the six `paper18-scoped-*` datasets (Findings 1 to 5: 18 scenarios, six backbones) and
+Labels for the six `paper18-main-*` datasets (Findings 1 to 5: 18 scenarios, six backbones) and
 for the privacy instruction variants (Findings 6 and 7).
 
 | File | Content |
@@ -36,7 +36,7 @@ An item is the privacy-relevant sentences of one memory (F2) or final response (
 ## Findings 6 and 7
 
 `finding6_7_trace_annotations.csv` has one row per loaded session of tasks a–c: the main
-instruction (from `paper18-scoped-*`) and the plain, strict and defense instructions
+instruction (from `paper18-main-*`) and the plain, strict and defense instructions
 (`rebuttal18-<arm>-*`), on Gemini, GPT-5.6, Qwen, GLM and Kimi.
 
 - `instruction`, `backbone`, `scenario`, `task`, `held value`.
@@ -49,7 +49,7 @@ instruction (from `paper18-scoped-*`) and the plain, strict and defense instruct
 
 ## Rebuild
 
-From the repository root, with the six `paper18-scoped-*` datasets (and, for Findings 6 and 7, the
+From the repository root, with the six `paper18-main-*` datasets (and, for Findings 6 and 7, the
 15 `rebuttal18-*` datasets) run into `results/` (each with `results.db`, `events.db` and `traces/`,
 as `scripts/run_final_sweep.sh` writes them):
 

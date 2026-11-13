@@ -7,7 +7,7 @@ COLD_REPS="${COLD_REPS:-10}"
 DENSE_COLD_REPS="${DENSE_COLD_REPS:-20}"
 SCENARIO_REPS="${SCENARIO_REPS:-}"
 TASKS="${TASKS:-}"
-export SCT_GUARD="${SCT_GUARD:-scoped}"
+export SCT_GUARD="${SCT_GUARD:-main}"
 
 LLM="${LLM:-openrouter}"
 PLANFILE="$(mktemp)"

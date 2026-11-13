@@ -1,6 +1,6 @@
 """Appendix numbers for Findings 6 and 7 (instruction variants and the defense).
 
-Data: the run folders results/paper18-scoped-<model> and results/rebuttal18-<arm>-<model>. Main is
+Data: the run folders results/paper18-main-<model> and results/rebuttal18-<arm>-<model>. Main is
 restricted to tasks a-c, matching the plain, strict and action runs. Five backbones (Claude was not
 run in the three variants). Score: the observable O of fig_guard_variants.observed.
 

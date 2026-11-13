@@ -53,13 +53,13 @@ SCT_DATASET=<name> bash scripts/serve.sh                                  # term
 export SCT_DATASET=<name>                                                 # terminal 2
 
 # main design: 18 scenarios x 5 tasks x 3 reps + cold = 1,545 sessions
-SCT_GUARD=scoped bash scripts/run_final_sweep.sh
+SCT_GUARD=main bash scripts/run_final_sweep.sh
 
 # privacy-instruction arms: 3 tasks x 1 rep + 5 cold = 349 sessions
 SCT_GUARD=plain TASKS=3 REPS=1 COLD_REPS=5 DENSE_COLD_REPS=5 bash scripts/run_final_sweep.sh
 ```
 
-`SCT_GUARD` is one of `scoped`, `plain`, `strict`, `action` (texts in
+`SCT_GUARD` is one of `main`, `plain`, `strict`, `action` (texts in
 [agents/browseruse_runner.py](agents/browseruse_runner.py)). Prefix `PLAN=1` to print the plan
 only. For Claude, prefix `LLM=claude_openrouter`.
 
@@ -82,7 +82,7 @@ PYTHONHASHSEED=0 uv run python -m analysis.export_report --dataset <name>
 
 writes `results/<name>/results.json`. `scripts/plant_check.py` reports whether each loaded
 session read its plant page, and `scripts/export_ls_table.py` builds the per-scenario and
-per-task LS tables across the six `paper18-scoped-*` datasets.
+per-task LS tables across the six `paper18-main-*` datasets.
 
 ## Reported results
 
@@ -90,7 +90,7 @@ per-task LS tables across the six `paper18-scoped-*` datasets.
 databases). Mean LS over the 18 scenarios, and the number of scenarios whose 95% interval
 excludes 0:
 
-| Model | scoped | plain | strict | action |
+| Model | main | plain | strict | action |
 |---|---|---|---|---|
 | Claude Sonnet 5 | 55.2 (16/18) | | | |
 | Gemini 3.7 Flash | 53.2 (13/18) | 73.2 (16/18) | 55.1 (11/18) | 7.7 (1/18) |
@@ -99,7 +99,7 @@ excludes 0:
 | GLM-4.6V | 61.4 (16/18) | 65.5 (15/18) | 67.5 (16/18) | 63.5 (14/18) |
 | Kimi K2.6 | 55.3 (16/18) | 73.1 (16/18) | 74.9 (16/18) | 39.5 (11/18) |
 
-Datasets: `paper18-scoped-<model>` (1,545 sessions; GLM 1,526) and
+Datasets: `paper18-main-<model>` (1,545 sessions; GLM 1,526) and
 `rebuttal18-{plain,strict,action}-<model>` (349 sessions; GLM 343). GLM never completes the
 planting step of SC03 task c, so those cells are absent.
 
@@ -107,7 +107,7 @@ planting step of SC03 task c, so those cells are absent.
 
 [labels/](labels/README.md) holds the per-session labels behind the trace findings (leak outcome,
 privacy statements in memory and final responses, task requirement) for the six
-`paper18-scoped-*` datasets, with the blind LLM-judge labels, the author adjudications and the
+`paper18-main-*` datasets, with the blind LLM-judge labels, the author adjudications and the
 script that rebuilds them from the runs. It also holds the session labels, tables and figure for
 the privacy instruction variants (Findings 6 and 7) and the code that builds them.
 

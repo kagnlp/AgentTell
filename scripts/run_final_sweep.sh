@@ -34,7 +34,7 @@ print(' '.join(SCENARIOS))")"
 [ -z "$ROSTER" ] && { echo "[fatal] could not read the scenario roster" >&2; exit 1; }
 
 echo "=================================================================="
-echo " sweep — $(echo "$ROSTER" | wc -w) scenarios, guard=${SCT_GUARD:-scoped}"
+echo " sweep — $(echo "$ROSTER" | wc -w) scenarios, guard=${SCT_GUARD:-main}"
 echo " backbone : $LLM -> $(uv run python -c "
 from orchestrator.config import LLM_REGISTRY; print(LLM_REGISTRY['$LLM'].model)")"
 echo " upstream : ${OPENROUTER_PROVIDER:-$(sed -n 's/^OPENROUTER_PROVIDER=//p' .env | head -1)}"

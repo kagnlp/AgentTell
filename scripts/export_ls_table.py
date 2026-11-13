@@ -26,12 +26,12 @@ from harness.scenarios import get_scenario  # noqa: E402
 logger = logging.getLogger(__name__)
 
 BACKBONES: dict[str, str] = {
-    "paper18-scoped-claude-sonnet-5": "Claude",
-    "paper18-scoped-gemini-3.7-flash": "Gemini",
-    "paper18-scoped-gpt-5.6-luna": "GPT-5.6",
-    "paper18-scoped-qwen3-vl-235b": "Qwen",
-    "paper18-scoped-glm-4.6v": "GLM",
-    "paper18-scoped-kimi-k2.6": "Kimi",
+    "paper18-main-claude-sonnet-5": "Claude",
+    "paper18-main-gemini-3.7-flash": "Gemini",
+    "paper18-main-gpt-5.6-luna": "GPT-5.6",
+    "paper18-main-qwen3-vl-235b": "Qwen",
+    "paper18-main-glm-4.6v": "GLM",
+    "paper18-main-kimi-k2.6": "Kimi",
 }
 
 PAPER_SCENARIOS: dict[str, tuple[str, str]] = {

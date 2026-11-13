@@ -1,6 +1,6 @@
 """Rebuild every released label file from the run outputs and the two annotation inputs.
 
-Run from the repository root once the six paper18-scoped datasets exist under results/:
+Run from the repository root once the six paper18-main datasets exist under results/:
 
   uv run python labels/code/build_labels.py [--runs results] [--out labels]
 
@@ -31,12 +31,12 @@ from stats import agreement  # noqa: E402
 from task_labels import LABELS  # noqa: E402
 
 BACKBONES = {
-    'paper18-scoped-claude-sonnet-5': 'Claude',
-    'paper18-scoped-gemini-3.7-flash': 'Gemini',
-    'paper18-scoped-gpt-5.6-luna': 'GPT-5.6',
-    'paper18-scoped-qwen3-vl-235b': 'Qwen',
-    'paper18-scoped-kimi-k2.6': 'Kimi',
-    'paper18-scoped-glm-4.6v': 'GLM',
+    'paper18-main-claude-sonnet-5': 'Claude',
+    'paper18-main-gemini-3.7-flash': 'Gemini',
+    'paper18-main-gpt-5.6-luna': 'GPT-5.6',
+    'paper18-main-qwen3-vl-235b': 'Qwen',
+    'paper18-main-kimi-k2.6': 'Kimi',
+    'paper18-main-glm-4.6v': 'GLM',
 }
 PAPER_ID = {
     'sso_wall': 'SC01', 'checkout': 'SC02', 'account_deanon': 'SC03', 'health_service': 'SC04',

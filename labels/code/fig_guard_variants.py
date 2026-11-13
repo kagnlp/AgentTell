@@ -1,6 +1,6 @@
 """Findings 6 and 7 figure: leakage under the four privacy instructions, grouped by backbone.
 
-Data: the run folders results/paper18-scoped-<model> (main instruction) and
+Data: the run folders results/paper18-main-<model> (main instruction) and
 results/rebuttal18-<plain|strict|action>-<model>. Main is restricted to tasks a-c so it matches the
 plain, strict and action runs (3 tasks x 1 rep). Claude is not in the three variants, so it is left
 out. The observable O follows Appendix B: the first option whose completion request reached /go;
@@ -35,7 +35,7 @@ OUT = os.environ.get("AGENTTELL_OUT", os.path.join(LABELS, "instruction_variants
 # metric -> (output name, fraction of the 5.5 in text width)
 LAYOUT = {"rate": ("fig_guard_variants", 0.60), "ls": ("fig_guard_variants_ls", 0.50)}
 
-ARMS = [("main", "paper18-scoped", "Main"), ("plain", "rebuttal18-plain", "Plain"),
+ARMS = [("main", "paper18-main", "Main"), ("plain", "rebuttal18-plain", "Plain"),
         ("strict", "rebuttal18-strict", "Strict"), ("action", "rebuttal18-action", "Defense")]
 MODELS = [("gemini-3.7-flash", "Gemini"), ("gpt-5.6-luna", "GPT-5.6"), ("qwen3-vl-235b", "Qwen"),
           ("glm-4.6v", "GLM"), ("kimi-k2.6", "Kimi")]
